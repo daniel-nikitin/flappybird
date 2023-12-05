@@ -15,6 +15,8 @@ class BIRD(arcade.Sprite):
         self.center_y = 250
         self.center_x = 250
         self.wingsound = arcade.load_sound("audio/wing.wav")
+        self.angle = 0
+
 
     def update(self):
         self.center_y += self.change_y
@@ -25,12 +27,21 @@ class BIRD(arcade.Sprite):
 
         if self.top > CEILING:
             self.top = CEILING
+        self.angle += self.change_angle
+        self.change_angle -= 0.5
+        if self.angle < -45:
+            self.angle = -45
+        if self.angle > 45:
+            self.angle = 45
 
     def jump(self):
         self.change_y = JUMP
         arcade.play_sound(self.wingsound)
 
 
+class PIPE(arcade.Sprite):
+    def __init__(self):
+        super().__init__(filename="pipe.png/PIPEg", scale=1)
 class Game(arcade.Window):
     def __init__(self, width, height, title):
         super().__init__(width, height, title)
@@ -47,6 +58,7 @@ class Game(arcade.Window):
             return
         if symbol == arcade.key.SPACE:
             self.bird.jump()
+            self.bird.change_angle = 5
 
     def on_key_release(self, symbol: int, modifiers: int):
         pass
@@ -61,8 +73,7 @@ class Game(arcade.Window):
         arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.backrnd)
         self.bird.draw()
         if self.pause == True:
-            arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT,
-                                          self.pause_image)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 , self.pause_image.width / 2, self.pause_image.height / 2 , self.pause_image)
 
 
 window = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
