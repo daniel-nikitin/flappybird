@@ -1,3 +1,5 @@
+import random
+
 import arcade
 
 SCREEN_WIDTH = 1000
@@ -40,14 +42,16 @@ class BIRD(arcade.Sprite):
 
 
 class Pipe(arcade.Sprite):
-    def __init__(self):
-        super().__init__(filename="pipe.png", scale=0.3)
+    def __init__(self, is_up):
+        super().__init__(filename="pipe.png", scale=0.3, flipped_vertically=is_up)
+        self.pointsound = arcade.load_sound("audio/point.wav")
 
     def update(self):
         self.center_x -= SPEED
         if self.right < 0:
             self.left = SCREEN_WIDTH
             window.score += 1
+            arcade.play_sound(self.pointsound)
 
 
 class Game(arcade.Window):
@@ -55,16 +59,23 @@ class Game(arcade.Window):
         super().__init__(width, height, title)
         self.backrnd = arcade.load_texture("bg.png")
         self.pause_image = arcade.load_texture("PAUSE.png")
+        self.Gover_image = arcade.load_texture("gameover.png")
+        self.stategame = True
         self.bird = BIRD()
         self.pause = False
         self.pipes = arcade.SpriteList()
         self.score = 0
 
         for i in range(4):
-            pipe = Pipe()
-            pipe.center_x = 300 * i
-            pipe.top = 300
+            pipe = Pipe(is_up=False)
+            pipe.center_x = 300 * i + SCREEN_WIDTH
+            pipe.top = random.randint(100, 300)
             self.pipes.append(pipe)
+
+            pie = Pipe(is_up=True)
+            pie.bottom = random.randint(400, SCREEN_HEIGHT)
+            pie.center_x = 300 * i + SCREEN_WIDTH
+            self.pipes.append(pie)
 
     def on_key_press(self, symbol: int, modifiers: int):
 
@@ -85,8 +96,17 @@ class Game(arcade.Window):
         self.bird.update()
         self.pipes.update()
 
+        pipecleaner = arcade.check_for_collision_with_list(self.bird, self.pipes)
+        if len(pipecleaner) > 0:
+            self.stategame = False
+            self.pause = True
+
     def on_draw(self):
         self.clear()
+        if self.stategame == False:
+            arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, self.Gover_image.width / 2,
+                                          self.Gover_image.height / 2, self.Gover_image)
+            return
         arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.backrnd)
         self.bird.draw()
         self.pipes.draw()
