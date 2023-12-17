@@ -5,8 +5,8 @@ import arcade
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 700
 SCREEN_TITLE = 'flappybird'
-GRAVITY = 3
-JUMP = 20
+GRAVITY = 1.5
+JUMP = 15
 CEILING = SCREEN_HEIGHT - 50
 FLOOR = 50
 SPEED = 5
@@ -104,8 +104,8 @@ class Game(arcade.Window):
     def on_draw(self):
         self.clear()
         if self.stategame == False:
-            arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, self.Gover_image.width / 2,
-                                          self.Gover_image.height / 2, self.Gover_image)
+            arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, self.Gover_image.width ,
+                                          self.Gover_image.height ,  self.Gover_image)
             return
         arcade.draw_texture_rectangle(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT, self.backrnd)
         self.bird.draw()
